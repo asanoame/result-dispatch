@@ -1,0 +1,2 @@
+# ResultDispatcher
+StartActivityForResult 自动生成分发方法类
