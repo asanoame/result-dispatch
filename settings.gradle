@@ -1,4 +1,3 @@
-include ':annotation'
-include ':processor'
+include ':result-dispatcher'
 include ':app'
 rootProject.name = "ActivityResultDispatcher"

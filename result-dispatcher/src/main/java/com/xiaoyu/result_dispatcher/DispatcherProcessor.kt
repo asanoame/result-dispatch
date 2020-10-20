@@ -1,7 +1,6 @@
-package com.xiaoyu.processor
+package com.xiaoyu.result_dispatcher
 
 import com.squareup.javapoet.*
-import com.xiaoyu.annotation.ResultDispatch
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.*
@@ -12,7 +11,7 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
-@SupportedAnnotationTypes("com.xiaoyu.annotation.ResultDispatch")
+@SupportedAnnotationTypes("com.xiaoyu.result_dispatcher.ResultDispatch")
 @SupportedOptions("requestCode", "resultCode")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class DispatcherProcessor : AbstractProcessor() {

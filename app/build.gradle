@@ -38,6 +38,10 @@ android {
         //重命名
         rename('classes.jar', "dispatcher-1.0.1.jar")
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     makeJar.dependsOn(build)
 }
@@ -53,6 +57,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 
-    implementation project(path: ':annotation')
-    kapt project(path: ':processor')
+    implementation project(path: ':result-dispatcher')
+    kapt project(path: ':result-dispatcher')
 }

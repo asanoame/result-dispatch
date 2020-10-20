@@ -1,12 +1,10 @@
 package com.xiaoyu.activityresultdispatcher
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import com.xiaoyu.annotation.ResultDispatch
+import com.xiaoyu.result_dispatcher.ResultDispatch
 import com.xiaoyu.resultdispatch.Dispatcher
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -35,5 +33,6 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Dispatcher.dispatch(this, requestCode, resultCode, data)
+
     }
 }
