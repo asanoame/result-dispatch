@@ -1,6 +1,8 @@
-package com.xiaoyu.result_dispatcher
+package com.xiaoyu.result_dispatcher_processor
 
 import com.squareup.javapoet.*
+import com.xiaoyu.result_dispatcher_processor.DispatcherContacts.DISPATCH_SUFFIX
+import com.xiaoyu.result_dispatcher.ResultDispatch
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.*
@@ -32,7 +34,9 @@ class DispatcherProcessor : AbstractProcessor() {
         annotations: MutableSet<out TypeElement>,
         roundEnvironment: RoundEnvironment
     ): Boolean {
-        initAnnotations(roundEnvironment.getElementsAnnotatedWith(ResultDispatch::class.java))
+        val elements =
+            roundEnvironment.getElementsAnnotatedWith(ResultDispatch::class.java)
+        initAnnotations(elements)
         generateJavaClass()
         mMessage.printMessage(Diagnostic.Kind.NOTE, mMessageBuilder)
         return true
@@ -73,7 +77,7 @@ class DispatcherProcessor : AbstractProcessor() {
             //生成分发方法
             val name = enclosedElement.simpleName.toString().decapitalize(Locale.ROOT)
             val methodBuilder = MethodSpec.methodBuilder("dispatch")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                 .addParameter(
                     ParameterSpec.builder(
                         ClassName.get(enclosedElement.asType()), name
@@ -97,7 +101,7 @@ class DispatcherProcessor : AbstractProcessor() {
             methodBuilder.addStatement(CodeBlock.of(contentBuilder.toString()))
             try {
                 val typeSpec =
-                    TypeSpec.classBuilder("${enclosedElement.simpleName}Dispatcher")
+                    TypeSpec.classBuilder("${enclosedElement.simpleName}${DISPATCH_SUFFIX}")
                         .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                         .addMethod(methodBuilder.build())
                         .build()
@@ -106,39 +110,39 @@ class DispatcherProcessor : AbstractProcessor() {
             } catch (e: IOException) {
             }
         }
-        //生成统一的代理入口（方便在base里调用）
-        val parameters = mutableListOf(
-            ParameterSpec.builder(Any::class.java, "object").build(),
-            ParameterSpec.builder(Int::class.java, "requestCode").build(),
-            ParameterSpec.builder(Int::class.java, "resultCode").build(),
-            ParameterSpec.builder(Class.forName("android.content.Intent"), "data")
-                .build()
-        )
-        val fileBuilder = TypeSpec.classBuilder("Dispatcher")
-            .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
-        val methodBuilder = MethodSpec.methodBuilder("dispatch")
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            .addParameters(parameters)
-            .returns(TypeName.VOID)
-
-        val contentBuilder = StringBuilder()
-        val iterator = mDispatcherElements.keys.iterator()
-        while (iterator.hasNext()) {
-            val enclosedElement = iterator.next()
-            contentBuilder.append(
-                "if (object instanceof ${enclosedElement.qualifiedName}) {\n" +
-                        "${enclosedElement.qualifiedName}Dispatcher.dispatch((${enclosedElement.qualifiedName})object,requestCode,resultCode,data);\n" +
-                        "}${if (iterator.hasNext()) "else" else ""} "
-            )
-        }
-        methodBuilder.addStatement(CodeBlock.of(contentBuilder.toString()))
-        fileBuilder.addMethod(methodBuilder.build())
-        val file = JavaFile.builder("com.xiaoyu.resultdispatch", fileBuilder.build()).build()
-        try {
-            file.writeTo(processingEnv.filer)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+//        //生成统一的代理入口（方便在base里调用）
+//        val parameters = mutableListOf(
+//            ParameterSpec.builder(Any::class.java, "object").build(),
+//            ParameterSpec.builder(Int::class.java, "requestCode").build(),
+//            ParameterSpec.builder(Int::class.java, "resultCode").build(),
+//            ParameterSpec.builder(Class.forName("android.content.Intent"), "data")
+//                .build()
+//        )
+//        val fileBuilder = TypeSpec.classBuilder("Dispatcher")
+//            .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
+//        val methodBuilder = MethodSpec.methodBuilder("dispatch")
+//            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+//            .addParameters(parameters)
+//            .returns(TypeName.VOID)
+//
+//        val contentBuilder = StringBuilder()
+//        val iterator = mDispatcherElements.keys.iterator()
+//        while (iterator.hasNext()) {
+//            val enclosedElement = iterator.next()
+//            contentBuilder.append(
+//                "if (object instanceof ${enclosedElement.qualifiedName}) {\n" +
+//                        "${enclosedElement.qualifiedName}Dispatcher.dispatch((${enclosedElement.qualifiedName})object,requestCode,resultCode,data);\n" +
+//                        "}${if (iterator.hasNext()) "else" else ""} "
+//            )
+//        }
+//        methodBuilder.addStatement(CodeBlock.of(contentBuilder.toString()))
+//        fileBuilder.addMethod(methodBuilder.build())
+//        val file = JavaFile.builder("com.xiaoyu.resultdispatch", fileBuilder.build()).build()
+//        try {
+//            file.writeTo(processingEnv.filer)
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
     }
 
     private fun getPackageName(typeElement: TypeElement): String {

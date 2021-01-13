@@ -1,8 +1,10 @@
-package com.xiaoyu.activityresultdispatcher
+package com.xiaoyu.activityresultdispatcher.view
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.xiaoyu.activityresultdispatcher.R
+import com.xiaoyu.result_dispatcher.ResultDispatch
 import kotlinx.android.synthetic.main.activity_main2.*
 
 class MainActivity2 : AppCompatActivity() {
@@ -19,5 +21,9 @@ class MainActivity2 : AppCompatActivity() {
             })
             finish()
         }
+    }
+
+    @ResultDispatch(10, 30)
+    fun test() {
     }
 }
