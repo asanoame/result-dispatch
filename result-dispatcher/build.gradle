@@ -1,8 +1,11 @@
 plugins {
     id 'java-library'
     id 'kotlin'
-    id 'aspectj'
+    id 'kotlin-parcelize'
+    id 'com.github.dcendents.android-maven'
 }
+
+group = 'com.github.XioaYu'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
@@ -10,5 +13,5 @@ java {
 }
 
 dependencies {
-    implementation 'org.aspectj:aspectjrt:1.8.13'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
